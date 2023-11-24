@@ -14980,7 +14980,7 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_top_sorted_users</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">df</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">user_item</span><span class="o">=</span><span class="n">user_item</span><span class="p">):</span>
@@ -15056,7 +15056,7 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
     <span class="n">User_article_ids</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_user_articles</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
     
     <span class="c1"># articles&#39; interatctions sorted from highest to lowest</span>
-    <span class="n">articles_interact</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;article_id&#39;</span><span class="p">])[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># sorting articles from the highest interaction to lowest</span>
+    <span class="n">articles_interact</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;article_id&#39;</span><span class="p">])[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="c1"># sorting articles from the highest interaction to lowest</span>
     <span class="c1">#print(articles_interact)</span>
     <span class="c1">#article_interact_id = articles_interact.index.tolist() #[articles_interact.index[key] for key, _ in enumerate(articles_interact)]</span>
     <span class="c1">#print(article_interact_id)</span>
@@ -15070,12 +15070,13 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
         <span class="c1">#articles_interact = df[df[&#39;user_id&#39;]==U_id][&#39;article_id&#39;].value_counts().sort_values(ascending=False)</span>
         <span class="c1">#article_interact_id = articles_interact.index.tolist()</span>
         <span class="c1">#print(articles_interact)</span>
-        <span class="n">recs</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rec_article_ids</span> <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">User_article_ids</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">)])</span> <span class="c1"># finding the articles that closest users have read</span>
-        <span class="c1">#print(recs)</span>
+        <span class="n">Unread_recs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">rec_article_ids</span><span class="p">,</span> <span class="n">User_article_ids</span><span class="p">,</span> <span class="n">assume_unique</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1">#recs = [rec for rec in article_interact_id if str(rec) in recs] # sort the articles from closest users in a way </span>
                                                                         <span class="c1"># that the most interacted articles come first</span>
-        <span class="n">sorted_recs</span> <span class="o">=</span> <span class="n">articles_interact</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">recs</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># sorting list of interactions from highest to lowest value</span>
-        <span class="n">recs</span> <span class="o">=</span> <span class="n">sorted_recs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="c1"># creating new recommendations list</span>
+        <span class="n">Unread_recs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">Unread_recs</span><span class="p">]</span>
+        <span class="n">sorted_recs</span> <span class="o">=</span> <span class="n">articles_interact</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">Unread_recs</span><span class="p">]</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># sorting list of interactions from highest to lowest value</span>
+        <span class="n">sorted_recs_ids</span> <span class="o">=</span> <span class="n">sorted_recs</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="c1"># creating new recommendations list</span>
+        <span class="p">[</span><span class="n">recs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sorted_recs_ids</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">recs</span><span class="p">]</span>
         
         <span class="c1">#print(recs)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">recs</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">m</span><span class="p">:</span>
@@ -15224,7 +15225,7 @@ The 3 most similar users to user 46 are: [4201, 23, 3782]
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Quick spot check - don&#39;t change this code - just use it to test your functions</span>
